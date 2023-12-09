@@ -1,5 +1,5 @@
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
-import 'package:gerenciamento_projetos/dao/projeto_dao.dart';
+import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 
 class ProjetoDaoMemory implements ProjetoDao {
   // Singleton
@@ -8,34 +8,63 @@ class ProjetoDaoMemory implements ProjetoDao {
   static ProjetoDaoMemory get instance => _instance;
   factory ProjetoDaoMemory() => _instance;
 
+  List<Projeto> dados = [
+    Projeto(
+      idProjeto: 1,
+      nomeProjeto: 'Projeto Teste',
+      dataInicioProjeto: DateTime.now(), //alterar
+      prazoProjeto: DateTime.now(), //alterar
+      descricaoProjeto: 'Isso é um projeto teste',
+      donoProjeto: Usuario(
+        idUsuario: 1,
+        nomeUsuario: 'Bianca',
+        emailUsuario: 'bianca@email.com',
+      ),
+      listaUsuariosProjeto: [],
+      listaTarefasProjeto: [],
+    ),
+  ];
+
   @override
   bool alterar(Projeto projeto) {
-    // TODO: implement alterar
-    throw UnimplementedError();
+    int ind = dados.indexOf(projeto);
+    if (ind >= 0) {
+      dados[ind] = projeto;
+      return true;
+    }
+    return false;
   }
 
   @override
   bool excluir(Projeto projeto) {
-    // TODO: implement excluir
-    throw UnimplementedError();
+    int ind = dados.indexOf(projeto);
+    if (ind >= 0) {
+      dados.removeAt(ind);
+      return true;
+    }
+    return false;
   }
 
   @override
   bool inserir(Projeto projeto) {
-    // TODO: implement inserir
-    throw UnimplementedError();
+    dados.add(projeto);
+    projeto.idProjeto = dados.length;
+    return true;
   }
 
   @override
   List<Projeto> listarTodos() {
-    // TODO: implement listarTodos
-    throw UnimplementedError();
+    return dados;
   }
 
 //Talvez não precise
   @override
   Projeto? selecionarPorId(int idProjeto) {
-    // TODO: implement selecionarPorId
-    throw UnimplementedError();
+    for (int i = 0; i < dados.length; i++) {
+      if (dados[i].idProjeto == idProjeto) {
+        return dados[i];
+      }
+    }
+    return null;
   }
 }
