@@ -27,6 +27,16 @@ class Usuario {
       emailUsuario: map['emailUsuario'],
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Usuario && other.idUsuario == idUsuario;
+  }
+
+  @override
+  int get hashCode => idUsuario.hashCode;
 }
 
 class Tarefa {

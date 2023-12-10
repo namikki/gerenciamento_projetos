@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 import 'package:gerenciamento_projetos/dao/classes_dao.dart';
-import 'package:gerenciamento_projetos/pages/form_tarefa_old.dart';
+import 'package:gerenciamento_projetos/pages/form_tarefa.dart';
 
 class ListTarefas extends StatefulWidget {
   @override
@@ -24,41 +24,49 @@ class _ListTarefasState extends State<ListTarefas> {
           return ListTile(
             title: Text(tarefa.descricaoTarefa),
             subtitle: Text(tarefa.tarefaCompleta ? 'Completa' : 'Pendente'),
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                setState(() {
-                  tarefas.remove(tarefa);
-                });
-              },
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => FormTarefa(
-                    onTarefaSubmit: (tarefaEditada) {
-                      setState(() {
-                        // Remover a tarefa antiga e adicionar a tarefa editada
-                        tarefas.remove(tarefa);
-                        tarefas.add(tarefaEditada);
-                      });
-                    },
-                    tarefa: tarefa,
-                    usuarios: [
-                      Usuario(
-                          idUsuario: 1,
-                          nomeUsuario: 'Bianca',
-                          emailUsuario: 'b@e.com'),
-                      Usuario(
-                          idUsuario: 2,
-                          nomeUsuario: 'Matheus',
-                          emailUsuario: 'm@e.com')
-                    ], // Passar a tarefa para a edição
-                  ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FormTarefa(
+                          onTarefaSubmit: (tarefaEditada) {
+                            setState(() {
+                              // Remover a tarefa antiga e adicionar a tarefa editada
+                              tarefas.remove(tarefa);
+                              tarefas.add(tarefaEditada);
+                            });
+                          },
+                          tarefa: tarefa,
+                          usuarios: [
+                            Usuario(
+                                idUsuario: 1,
+                                nomeUsuario: 'Bianca',
+                                emailUsuario: 'b@e.com'),
+                            Usuario(
+                                idUsuario: 2,
+                                nomeUsuario: 'Matheus',
+                                emailUsuario: 'm@e.com')
+                          ], // Passar a tarefa para a edição
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () {
+                    setState(() {
+                      tarefas.remove(tarefa);
+                    });
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),

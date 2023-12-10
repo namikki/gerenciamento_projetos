@@ -1,4 +1,5 @@
 import 'package:gerenciamento_projetos/pages/list_usuarios.dart';
+import 'package:gerenciamento_projetos/pages/list_tarefas.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.light,
       ),
-      home: ListUsuario(),
+      home: ListTarefas(),
       debugShowCheckedModeBanner: false,
     );
   }
