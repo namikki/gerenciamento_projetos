@@ -9,6 +9,24 @@ class Usuario {
       {required this.idUsuario,
       required this.nomeUsuario,
       required this.emailUsuario});
+
+  // Método para converter o usuário em um formato adequado para o SharedPreferences
+  Map<String, dynamic> toMap() {
+    return {
+      'idUsuario': idUsuario,
+      'nomeUsuario': nomeUsuario,
+      'emailUsuario': emailUsuario,
+    };
+  }
+
+  // Método para criar um usuário a partir de um mapa obtido do SharedPreferences
+  factory Usuario.fromMap(Map<String, dynamic> map) {
+    return Usuario(
+      idUsuario: map['idUsuario'],
+      nomeUsuario: map['nomeUsuario'],
+      emailUsuario: map['emailUsuario'],
+    );
+  }
 }
 
 class Tarefa {
