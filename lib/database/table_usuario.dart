@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:gerenciamento_projetos/database/database_helper.dart';
 import 'package:gerenciamento_projetos/database/database_provider.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
@@ -6,21 +8,24 @@ class UsuarioDao {
   final dbProvider = DatabaseProvider.dbProvider;
   static final usuarioTABLE = 'usuario';
 
-
-Future<int> createUsuario(Usuario usuario) async {
-  final db = await dbProvider.database;
-  int result = 0;
-  try {
-    result = await db.insert(usuarioTABLE, usuario.toDatabaseJson());
-    print('Usuário inserido com sucesso: ${usuario.nomeUsuario}');
-  } catch (error) {
-    print('Erro ao inserir usuário: $error');
+  Future<int> createUsuario(Usuario usuario) async {
+    final db = await dbProvider.database;
+    int result = 0;
+    try {
+      result = await db.insert(usuarioTABLE, usuario.toDatabaseJson());
+      if (result > 0) {
+        stdout.write('Usuário inserido com sucesso: ${usuario.nomeUsuario}');
+      } else {
+        stdout.write('Falha ao inserir usuário: ${usuario.nomeUsuario}');
+      }
+    } catch (error) {
+      stdout.write('Erro ao inserir usuário: $error');
+    }
+    return result;
   }
-  return result;
-}
 
-
-  Future<List<Usuario>> getUsuarios({List<String>? columns, String? query}) async {
+  Future<List<Usuario>> getUsuarios(
+      {List<String>? columns, String? query}) async {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result = [];
@@ -50,7 +55,8 @@ Future<int> createUsuario(Usuario usuario) async {
 
   Future<int> deleteUsuario(int id) async {
     final db = await dbProvider.database;
-    var result = await db.delete(usuarioTABLE, where: 'id = ?', whereArgs: [id]);
+    var result =
+        await db.delete(usuarioTABLE, where: 'id = ?', whereArgs: [id]);
 
     return result;
   }
