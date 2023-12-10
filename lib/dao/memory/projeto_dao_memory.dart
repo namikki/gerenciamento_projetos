@@ -15,11 +15,11 @@ class ProjetoDaoMemory implements ProjetoDao {
       dataInicioProjeto: DateTime.now(), //alterar
       prazoProjeto: DateTime.now(), //alterar
       descricaoProjeto: 'Isso é um projeto teste',
-      donoProjeto: Usuario(
+      /*donoProjeto: Usuario(
         idUsuario: 1,
         nomeUsuario: 'Bianca',
         emailUsuario: 'bianca@email.com',
-      ),
+      ),*/
       listaUsuariosProjeto: [],
       listaTarefasProjeto: [],
     ),

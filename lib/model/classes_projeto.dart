@@ -58,7 +58,6 @@ class Projeto {
   DateTime dataInicioProjeto;
   DateTime prazoProjeto;
   String descricaoProjeto;
-  Usuario donoProjeto;
   List<Usuario> listaUsuariosProjeto;
   List<Tarefa> listaTarefasProjeto;
 
@@ -68,7 +67,6 @@ class Projeto {
       required this.dataInicioProjeto,
       required this.prazoProjeto,
       required this.descricaoProjeto,
-      required this.donoProjeto,
       required this.listaUsuariosProjeto,
       required this.listaTarefasProjeto});
 }
