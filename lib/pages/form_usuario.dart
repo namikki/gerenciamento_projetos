@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 import 'package:gerenciamento_projetos/dao/memory/projeto_dao_memory.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gerenciamento_projetos/database/database_provider.dart';
+import 'package:gerenciamento_projetos/database/table_usuario.dart';
 
 class FormUsuario extends StatefulWidget {
   final Function(Usuario) onUsuarioSubmit;
@@ -49,16 +50,14 @@ class _FormUsuarioState extends State<FormUsuario> {
                     emailUsuario: email,
                   );
 
-                  widget.onUsuarioSubmit(novoUsuario);
+                  // Cria uma instância do UsuarioDao
+                  final usuarioDao = UsuarioDao();
 
-                  // Salvar no SharedPreferences
-                  final prefs = await SharedPreferences.getInstance();
-                  final usuariosJson = prefs.getStringList('usuarios') ?? [];
+                  // Insere o novo usuário no banco de dados
+                  final id = await usuarioDao.createUsuario(novoUsuario);
 
-                  // Adicionar o usuário como uma string JSON
-                  usuariosJson.add(jsonEncode(novoUsuario.toMap()));
-
-                  prefs.setStringList('usuarios', usuariosJson);
+                  // Imprime o id do usuário inserido
+                  print('Usuário inserido com id: $id');
 
                   Navigator.pop(context);
                 } else {

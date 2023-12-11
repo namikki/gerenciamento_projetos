@@ -31,8 +31,10 @@ dependencies:
   flutter:
     sdk: flutter
     
-  intl: ^0.17.0
-
+  intl: ^0.18.1
+  sqflite: ^2.0.0+4
+  sqflite_common_ffi: ^2.3.0
+  # sqflite_common_ffi_web: '>=0.1.0-dev.1'
   flutter_form_builder: ^9.1.1
   form_builder_validators: ^9.1.0
 

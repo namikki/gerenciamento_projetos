@@ -16,7 +16,7 @@ abstract class TarefaDao {
   bool excluir(Tarefa tarefa);
 }
 
-abstract class UsuarioDao {
+abstract class UsuarioDaoo {
   List<Usuario> listarTodos();
   Usuario? selecionarPorId(int idUsuario);
   bool inserir(Usuario usuario);

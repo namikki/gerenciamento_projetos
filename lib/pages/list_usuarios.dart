@@ -4,6 +4,7 @@ import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 import 'package:gerenciamento_projetos/dao/memory/projeto_dao_memory.dart';
 import 'package:gerenciamento_projetos/pages/form_usuario.dart';
+import 'package:gerenciamento_projetos/database/table_usuario.dart';
 
 class ListUsuario extends StatefulWidget {
   @override
@@ -12,6 +13,20 @@ class ListUsuario extends StatefulWidget {
 
 class _ListUsuarioState extends State<ListUsuario> {
   List<Usuario> usuarios = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadUsuarios();
+  }
+
+  void loadUsuarios() async {
+    final usuarioDao = UsuarioDao();
+    final allUsuarios = await usuarioDao.getUsuarios();
+    setState(() {
+      usuarios = allUsuarios;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,23 +56,25 @@ class _ListUsuarioState extends State<ListUsuario> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final novoUsuario = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FormUsuario(
-                onUsuarioSubmit: (usuario) {
-                  setState(() {
-                    usuarios.add(usuario);
-                  });
-                },
-              ),
-            ),
-          );
-        },
-        child: Icon(Icons.add),
+floatingActionButton: FloatingActionButton(
+  onPressed: () async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FormUsuario(
+          onUsuarioSubmit: (usuario) {
+            setState(() {
+              usuarios.add(usuario);
+            });
+          },
+        ),
       ),
+    );
+    loadUsuarios();
+  },
+  child: Icon(Icons.add),
+),
+
     );
   }
 }

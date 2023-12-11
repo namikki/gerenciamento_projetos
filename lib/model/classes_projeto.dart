@@ -37,6 +37,18 @@ class Usuario {
 
   @override
   int get hashCode => idUsuario.hashCode;
+
+  factory Usuario.fromDatabaseJson(Map<String, dynamic> data) => Usuario(
+        idUsuario: data['idUsuario'],
+        nomeUsuario: data['nomeUsuario'],
+        emailUsuario: data['emailUsuario'],
+      );
+
+  Map<String, dynamic> toDatabaseJson() => {
+        "idUsuario": idUsuario,
+        "nomeUsuario": nomeUsuario,
+        "emailUsuario": emailUsuario,
+      };
 }
 
 class Tarefa {

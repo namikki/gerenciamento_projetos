@@ -1,7 +1,7 @@
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 
-class UsuarioDaoMemory implements UsuarioDao {
+class UsuarioDaoMemory implements UsuarioDaoo {
   // Singleton
   static UsuarioDaoMemory _instance = UsuarioDaoMemory._();
   UsuarioDaoMemory._();
