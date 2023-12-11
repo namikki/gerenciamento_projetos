@@ -2,10 +2,10 @@ import 'dart:io';
 import 'package:gerenciamento_projetos/database/database_provider.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 
-
 class UsuarioDao {
   final dbProvider = DatabaseProvider.dbProvider;
   static final usuarioTABLE = 'usuario';
+  static final projetoUsuarioTABLE = 'projetoUsuario';
 
   Future<int> createUsuario(Usuario usuario) async {
     final db = await dbProvider.database;
@@ -56,6 +56,57 @@ class UsuarioDao {
     final db = await dbProvider.database;
     var result =
         await db.delete(usuarioTABLE, where: 'id = ?', whereArgs: [id]);
+
+    return result;
+  }
+
+  Future<int> createProjetoUsuario(int projetoId, int usuarioId) async {
+    final db = await dbProvider.database;
+    Map<String, dynamic> projetoUsuario = {
+      'projetoId': projetoId,
+      'usuarioId': usuarioId,
+    };
+
+    int result = 0;
+    try {
+      result = await db.insert(projetoUsuarioTABLE, projetoUsuario);
+      if (result > 0) {
+        stdout.write(
+            'Associação de usuário ao projeto inserida com sucesso: $projetoId - $usuarioId');
+      } else {
+        stdout.write(
+            'Falha ao inserir associação de usuário ao projeto: $projetoId - $usuarioId');
+      }
+    } catch (error) {
+      stdout.write('Erro ao inserir associação de usuário ao projeto: $error');
+    }
+    return result;
+  }
+
+  Future<List<Usuario>> getUsuariosDoProjeto(int projetoId) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = await db.query(
+      usuarioTABLE,
+      where:
+          'idUsuario IN (SELECT usuarioId FROM $projetoUsuarioTABLE WHERE projetoId = ?)',
+      whereArgs: [projetoId],
+    );
+
+    List<Usuario> usuarios = result.isNotEmpty
+        ? result.map((item) => Usuario.fromDatabaseJson(item)).toList()
+        : [];
+    return usuarios;
+  }
+
+  Future<int> deleteProjetoUsuarios(int projetoId) async {
+    final db = await dbProvider.database;
+
+    var result = await db.delete(
+      projetoUsuarioTABLE,
+      where: 'projetoId = ?',
+      whereArgs: [projetoId],
+    );
 
     return result;
   }
