@@ -1,6 +1,6 @@
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 
-abstract class ProjetoDao {
+abstract class ProjetoDaoo {
   List<Projeto> listarTodos();
   Projeto? selecionarPorId(int idProjeto);
   bool inserir(Projeto projeto);
@@ -8,7 +8,7 @@ abstract class ProjetoDao {
   bool excluir(Projeto projeto);
 }
 
-abstract class TarefaDao {
+abstract class TarefaDaoo {
   List<Tarefa> listarTodos();
   Tarefa? selecionarPorId(int idTarefa);
   bool inserir(Tarefa tarefa);

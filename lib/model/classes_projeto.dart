@@ -35,14 +35,29 @@ class Usuario {
 class Tarefa {
   int idTarefa;
   String descricaoTarefa;
-  Usuario usuarioTarefa;
+  int usuarioTarefaId;
   bool tarefaCompleta;
 
-  Tarefa(
-      {required this.idTarefa,
-      required this.descricaoTarefa,
-      required this.usuarioTarefa,
-      required this.tarefaCompleta});
+  Tarefa({
+    required this.idTarefa,
+    required this.descricaoTarefa,
+    required this.usuarioTarefaId,
+    required this.tarefaCompleta,
+  });
+
+  Map<String, dynamic> toDatabaseJson() => {
+        "idTarefa": idTarefa,
+        "descricaoTarefa": descricaoTarefa,
+        "usuarioTarefaId": usuarioTarefaId,
+        "tarefaCompleta": tarefaCompleta ? 1 : 0,
+      };
+
+  factory Tarefa.fromDatabaseJson(Map<String, dynamic> data) => Tarefa(
+        idTarefa: data['idTarefa'],
+        descricaoTarefa: data['descricaoTarefa'],
+        usuarioTarefaId: data['usuarioTarefaId'],
+        tarefaCompleta: data['tarefaCompleta'] == 1,
+      );
 }
 
 class Projeto {

@@ -38,13 +38,36 @@ class _ListUsuarioState extends State<ListUsuario> {
           return ListTile(
             title: Text(usuario.nomeUsuario),
             subtitle: Text(usuario.emailUsuario),
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () {
-                setState(() {
-                  usuarios.remove(usuario);
-                });
-              },
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FormUsuario(
+                          onUsuarioSubmit: (usuarioAtualizado) {
+                            setState(() {
+                              usuarios[index] = usuarioAtualizado;
+                            });
+                          },
+                          usuario: usuario,
+                        ),
+                      ),
+                    ).then((_) => loadUsuarios());
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete),
+                  onPressed: () async {
+                    final usuarioDao = UsuarioDao();
+                    await usuarioDao.deleteUsuario(usuario.idUsuario);
+                    loadUsuarios();
+                  },
+                ),
+              ],
             ),
             onTap: () {
               // Adicione a navegação para a página de detalhes ou edição
@@ -53,25 +76,24 @@ class _ListUsuarioState extends State<ListUsuario> {
           );
         },
       ),
-floatingActionButton: FloatingActionButton(
-  onPressed: () async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => FormUsuario(
-          onUsuarioSubmit: (usuario) {
-            setState(() {
-              usuarios.add(usuario);
-            });
-          },
-        ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => FormUsuario(
+                onUsuarioSubmit: (usuario) {
+                  setState(() {
+                    usuarios.add(usuario);
+                  });
+                },
+              ),
+            ),
+          );
+          loadUsuarios();
+        },
+        child: Icon(Icons.add),
       ),
-    );
-    loadUsuarios();
-  },
-  child: Icon(Icons.add),
-),
-
     );
   }
 }

@@ -6,6 +6,7 @@ class UsuarioDao {
   final dbProvider = DatabaseProvider.dbProvider;
   static final usuarioTABLE = 'usuario';
   static final projetoUsuarioTABLE = 'projetoUsuario';
+  static final projetoTarefaTABLE = 'projetoTarefa';
 
   Future<int> createUsuario(Usuario usuario) async {
     final db = await dbProvider.database;
@@ -31,7 +32,9 @@ class UsuarioDao {
     if (query != null) {
       if (query.isNotEmpty) {
         result = await db.query(usuarioTABLE,
-            columns: columns, where: 'nome LIKE ?', whereArgs: ["%$query%"]);
+            columns: columns,
+            where: 'nomeUsuario LIKE ?',
+            whereArgs: ["%$query%"]);
       }
     } else {
       result = await db.query(usuarioTABLE, columns: columns);
@@ -55,7 +58,7 @@ class UsuarioDao {
   Future<int> deleteUsuario(int id) async {
     final db = await dbProvider.database;
     var result =
-        await db.delete(usuarioTABLE, where: 'id = ?', whereArgs: [id]);
+        await db.delete(usuarioTABLE, where: 'idUsuario = ?', whereArgs: [id]);
 
     return result;
   }
@@ -110,4 +113,22 @@ class UsuarioDao {
 
     return result;
   }
+
+  Future<List<Usuario>> getUsuariosDaTarefa(int tarefaId) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = await db.query(
+      usuarioTABLE,
+      where:
+          'idUsuario IN (SELECT usuarioId FROM $projetoTarefaTABLE WHERE tarefaId = ?)',
+      whereArgs: [tarefaId],
+    );
+
+    List<Usuario> usuarios = result.isNotEmpty
+        ? result.map((item) => Usuario.fromDatabaseJson(item)).toList()
+        : [];
+    return usuarios;
+  }
+
+//fechamento
 }

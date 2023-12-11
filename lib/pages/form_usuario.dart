@@ -4,8 +4,9 @@ import 'package:gerenciamento_projetos/dao/memory/usuario_dao_memory.dart';
 
 class FormUsuario extends StatefulWidget {
   final Function(Usuario) onUsuarioSubmit;
+  final Usuario? usuario;
 
-  FormUsuario({required this.onUsuarioSubmit});
+  FormUsuario({required this.onUsuarioSubmit, this.usuario});
 
   @override
   _FormUsuarioState createState() => _FormUsuarioState();
@@ -14,6 +15,16 @@ class FormUsuario extends StatefulWidget {
 class _FormUsuarioState extends State<FormUsuario> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.usuario != null) {
+      _nomeController.text = widget.usuario!.nomeUsuario;
+      _emailController.text = widget.usuario!.emailUsuario;
+      // Inicialize mais controladores conforme necessário
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

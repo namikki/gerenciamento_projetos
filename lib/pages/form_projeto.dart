@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
+import 'package:gerenciamento_projetos/pages/form_tarefa.dart';
 import 'package:gerenciamento_projetos/dao/memory/projeto_dao_memory.dart';
 import 'package:gerenciamento_projetos/dao/memory/usuario_dao_memory.dart';
+import 'package:gerenciamento_projetos/dao/memory/tarefa_dao_memory.dart';
 
 class FormProjeto extends StatefulWidget {
   final Function(Projeto) onProjetoSubmit;
@@ -18,7 +20,6 @@ class _FormProjetoState extends State<FormProjeto> {
   final TextEditingController _dataInicioController = TextEditingController();
   final TextEditingController _prazoController = TextEditingController();
   final TextEditingController _descricaoController = TextEditingController();
-
   List<Usuario> _usuarios = []; // Lista de todos os usuários
   List<bool> _selecionados = []; // Lista de usuários selecionados
 
@@ -86,11 +87,11 @@ class _FormProjetoState extends State<FormProjeto> {
               decoration: InputDecoration(labelText: 'Descrição'),
             ),
             const Padding(
-              padding: EdgeInsets.only(top: 16.0, bottom: 8.0),
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Selecione os usuários para o projeto:',
+                  'Usuários para o projeto:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -109,6 +110,22 @@ class _FormProjetoState extends State<FormProjeto> {
                   },
                 );
               },
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FormTarefa(
+                      onTarefaSubmit: (tarefa) {
+                        // Aqui você pode adicionar a tarefa ao projeto
+                      },
+                      usuarios: _usuarios,
+                    ),
+                  ),
+                );
+              },
+              child: Text('Adicionar Tarefa'),
             ),
             SizedBox(height: 16),
             ElevatedButton(

@@ -22,9 +22,8 @@ class DatabaseProvider {
     return database;
   }
 
-
   void populateDb(Database database, int version) async {
-  await database.execute('''
+    await database.execute('''
     CREATE TABLE usuario (
       idUsuario INTEGER PRIMARY KEY,
       nomeUsuario TEXT NOT NULL,
@@ -32,17 +31,18 @@ class DatabaseProvider {
     )
   ''');
 
-  await database.execute('''
+    await database.execute('''
     CREATE TABLE tarefa (
       idTarefa INTEGER PRIMARY KEY,
       descricaoTarefa TEXT NOT NULL,
       usuarioTarefaId INTEGER,
+      projetoTarefaId INTEGER,
       tarefaCompleta INTEGER NOT NULL,
       FOREIGN KEY (usuarioTarefaId) REFERENCES usuario (idUsuario)
     )
   ''');
 
-  await database.execute('''
+    await database.execute('''
     CREATE TABLE projeto (
       idProjeto INTEGER PRIMARY KEY,
       nomeProjeto TEXT NOT NULL,
@@ -52,7 +52,7 @@ class DatabaseProvider {
     )
   ''');
 
-  await database.execute('''
+    await database.execute('''
     CREATE TABLE projetoUsuario (
       projetoId INTEGER NOT NULL,
       usuarioId INTEGER NOT NULL,
@@ -62,7 +62,7 @@ class DatabaseProvider {
     )
   ''');
 
-  await database.execute('''
+    await database.execute('''
     CREATE TABLE projetoTarefa (
       projetoId INTEGER NOT NULL,
       tarefaId INTEGER NOT NULL,
@@ -71,6 +71,5 @@ class DatabaseProvider {
       FOREIGN KEY (tarefaId) REFERENCES tarefa (idTarefa)
     )
   ''');
-}
-
+  }
 }
