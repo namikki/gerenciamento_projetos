@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:gerenciamento_projetos/database/database_helper.dart';
 import 'package:gerenciamento_projetos/database/database_provider.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
 
