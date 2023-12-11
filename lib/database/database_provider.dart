@@ -36,7 +36,6 @@ class DatabaseProvider {
       idTarefa INTEGER PRIMARY KEY,
       descricaoTarefa TEXT NOT NULL,
       usuarioTarefaId INTEGER,
-      projetoTarefaId INTEGER,
       tarefaCompleta INTEGER NOT NULL,
       FOREIGN KEY (usuarioTarefaId) REFERENCES usuario (idUsuario)
     )

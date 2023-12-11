@@ -36,12 +36,14 @@ class Tarefa {
   int idTarefa;
   String descricaoTarefa;
   int usuarioTarefaId;
+  //int projetoTarefaId;
   bool tarefaCompleta;
 
   Tarefa({
     required this.idTarefa,
     required this.descricaoTarefa,
     required this.usuarioTarefaId,
+    // required this.projetoTarefaId,
     required this.tarefaCompleta,
   });
 
@@ -49,6 +51,7 @@ class Tarefa {
         "idTarefa": idTarefa,
         "descricaoTarefa": descricaoTarefa,
         "usuarioTarefaId": usuarioTarefaId,
+        //"projetoTarefaId": projetoTarefaId,
         "tarefaCompleta": tarefaCompleta ? 1 : 0,
       };
 
@@ -56,6 +59,7 @@ class Tarefa {
         idTarefa: data['idTarefa'],
         descricaoTarefa: data['descricaoTarefa'],
         usuarioTarefaId: data['usuarioTarefaId'],
+        //projetoTarefaId: data['projetoTarefaId'],
         tarefaCompleta: data['tarefaCompleta'] == 1,
       );
 }

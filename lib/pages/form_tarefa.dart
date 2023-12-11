@@ -7,9 +7,10 @@ class FormTarefa extends StatefulWidget {
   final Function(Tarefa) onTarefaSubmit;
   final Tarefa? tarefa;
   final List<Usuario> usuarios;
+  final int projetoId;
 
   FormTarefa(
-      {required this.onTarefaSubmit, this.tarefa, required this.usuarios});
+      {required this.onTarefaSubmit, this.tarefa, required this.usuarios, required this.projetoId});
 
   @override
   _FormTarefaState createState() => _FormTarefaState();
@@ -137,7 +138,8 @@ class _FormTarefaState extends State<FormTarefa> {
                     );
 
                     // Insere a nova tarefa no banco de dados
-                    final id = await tarefaDao.createTarefa(novaTarefa);
+                    final id = await tarefaDao.createTarefa(
+                        novaTarefa, widget.projetoId);
                     // Imprime o id da tarefa inserida
                     print('Tarefa inserida com id: $id');
                   } else {

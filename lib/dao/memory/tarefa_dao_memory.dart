@@ -7,13 +7,14 @@ class TarefaDao {
   static final tarefaTABLE = 'tarefa';
   static final projetoTarefaTABLE = 'projetoTarefa';
 
-  Future<int> createTarefa(Tarefa tarefa) async {
+  Future<int> createTarefa(Tarefa tarefa, int projetoId) async {
     final db = await dbProvider.database;
     int result = 0;
     try {
       result = await db.insert(tarefaTABLE, tarefa.toDatabaseJson());
       if (result > 0) {
         stdout.write('Tarefa inserida com sucesso: ${tarefa.descricaoTarefa}');
+        await createProjetoTarefa(projetoId, tarefa.idTarefa);
       } else {
         stdout.write('Falha ao inserir tarefa: ${tarefa.descricaoTarefa}');
       }
@@ -23,7 +24,8 @@ class TarefaDao {
     return result;
   }
 
-  Future<List<Tarefa>> getTarefas({List<String>? columns, String? query}) async {
+  Future<List<Tarefa>> getTarefas(
+      {List<String>? columns, String? query}) async {
     final db = await dbProvider.database;
 
     List<Map<String, dynamic>> result = [];
@@ -60,4 +62,40 @@ class TarefaDao {
 
     return result;
   }
+
+  Future<List<Tarefa>> getTarefasDoProjeto(int projetoId) async {
+    final db = await dbProvider.database;
+    final List<Map<String, dynamic>> result = await db.query(
+      projetoTarefaTABLE,
+      columns: ['tarefaId'],
+      where: 'projetoId = ?',
+      whereArgs: [projetoId],
+    );
+
+    final List<Tarefa> tarefas = [];
+    for (final item in result) {
+      final tarefaId = item['tarefaId'];
+      final tarefaData = await db.query(
+        tarefaTABLE,
+        where: 'idTarefa = ?',
+        whereArgs: [tarefaId],
+      );
+      final tarefa = Tarefa.fromDatabaseJson(tarefaData.first);
+      tarefas.add(tarefa);
+    }
+
+    return tarefas;
+  }
+
+  Future<int> createProjetoTarefa(int projetoId, int tarefaId) async {
+    final db = await dbProvider.database;
+    final Map<String, dynamic> row = {
+      'projetoId': projetoId,
+      'tarefaId': tarefaId,
+    };
+    final result = await db.insert(projetoTarefaTABLE, row);
+    return result;
+  }
+
+//fechamento
 }

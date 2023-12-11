@@ -22,6 +22,7 @@ class _FormProjetoState extends State<FormProjeto> {
   final TextEditingController _descricaoController = TextEditingController();
   List<Usuario> _usuarios = []; // Lista de todos os usuários
   List<bool> _selecionados = []; // Lista de usuários selecionados
+  List<Tarefa> _tarefas = []; // Lista de tarefas
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _FormProjetoState extends State<FormProjeto> {
       _descricaoController.text = widget.projeto!.descricaoProjeto;
     }
     loadUsuarios();
+    loadTarefas(); // Carrega as tarefas associadas ao projeto
   }
 
   void loadUsuarios() async {
@@ -58,6 +60,17 @@ class _FormProjetoState extends State<FormProjeto> {
       _usuarios = allUsuarios;
       _selecionados = selecionadosTemp;
     });
+  }
+
+  void loadTarefas() async {
+    final tarefaDao = TarefaDao();
+    if (widget.projeto != null) {
+      final tarefasDoProjeto =
+          await tarefaDao.getTarefasDoProjeto(widget.projeto!.idProjeto);
+      setState(() {
+        _tarefas = tarefasDoProjeto;
+      });
+    }
   }
 
   @override
@@ -111,6 +124,7 @@ class _FormProjetoState extends State<FormProjeto> {
                 );
               },
             ),
+
             ElevatedButton(
               onPressed: () async {
                 await Navigator.push(
@@ -118,14 +132,71 @@ class _FormProjetoState extends State<FormProjeto> {
                   MaterialPageRoute(
                     builder: (context) => FormTarefa(
                       onTarefaSubmit: (tarefa) {
-                        // Aqui você pode adicionar a tarefa ao projeto
+                        setState(() {
+                          _tarefas.add(tarefa);
+                        });
                       },
                       usuarios: _usuarios,
+                      projetoId: widget.projeto!.idProjeto,
                     ),
                   ),
                 );
               },
               child: Text('Adicionar Tarefa'),
+            ),
+            // Lista de Tarefas
+            const Padding(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Lista de Tarefas:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: _tarefas.length,
+              itemBuilder: (context, index) {
+                final tarefa = _tarefas[index];
+                return ListTile(
+                  title: Text(tarefa.descricaoTarefa),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => FormTarefa(
+                                onTarefaSubmit: (tarefaAtualizada) {
+                                  setState(() {
+                                    _tarefas[index] = tarefaAtualizada;
+                                  });
+                                },
+                                tarefa: tarefa,
+                                usuarios: _usuarios,
+                                projetoId: widget.projeto!.idProjeto,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          setState(() {
+                            _tarefas.removeAt(index);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
             SizedBox(height: 16),
             ElevatedButton(
