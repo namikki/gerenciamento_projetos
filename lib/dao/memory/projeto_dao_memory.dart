@@ -1,70 +1,70 @@
+import 'dart:io';
+import 'package:gerenciamento_projetos/database/database_provider.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
-import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 
-class ProjetoDaoMemory implements ProjetoDao {
-  // Singleton
-  static ProjetoDaoMemory _instance = ProjetoDaoMemory._();
-  ProjetoDaoMemory._();
-  static ProjetoDaoMemory get instance => _instance;
-  factory ProjetoDaoMemory() => _instance;
+class ProjetoDao {
+  final dbProvider = DatabaseProvider.dbProvider;
+  static final projetoTABLE = 'projeto';
+  static final projetoUsuarioTABLE = 'projetoUsuario';
 
-  List<Projeto> dados = [
-    Projeto(
-      idProjeto: 1,
-      nomeProjeto: 'Projeto Teste',
-      dataInicioProjeto: DateTime.now(), //alterar
-      prazoProjeto: DateTime.now(), //alterar
-      descricaoProjeto: 'Isso é um projeto teste',
-      /*donoProjeto: Usuario(
-        idUsuario: 1,
-        nomeUsuario: 'Bianca',
-        emailUsuario: 'bianca@email.com',
-      ),*/
-      listaUsuariosProjeto: [],
-      listaTarefasProjeto: [],
-    ),
-  ];
-
-  @override
-  bool alterar(Projeto projeto) {
-    int ind = dados.indexOf(projeto);
-    if (ind >= 0) {
-      dados[ind] = projeto;
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  bool excluir(Projeto projeto) {
-    int ind = dados.indexOf(projeto);
-    if (ind >= 0) {
-      dados.removeAt(ind);
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  bool inserir(Projeto projeto) {
-    dados.add(projeto);
-    projeto.idProjeto = dados.length;
-    return true;
-  }
-
-  @override
-  List<Projeto> listarTodos() {
-    return dados;
-  }
-
-//Talvez não precise
-  @override
-  Projeto? selecionarPorId(int idProjeto) {
-    for (int i = 0; i < dados.length; i++) {
-      if (dados[i].idProjeto == idProjeto) {
-        return dados[i];
+  Future<int> createProjeto(Projeto projeto) async {
+    final db = await dbProvider.database;
+    int result = 0;
+    try {
+      result = await db.insert(projetoTABLE, projeto.toDatabaseJson());
+      if (result > 0) {
+        stdout.write('Projeto inserido com sucesso: ${projeto.nomeProjeto}');
+        for (var usuario in projeto.usuarios) {
+          await db.insert(projetoUsuarioTABLE, {
+            'projetoId': projeto.idProjeto,
+            'usuarioId': usuario,
+          });
+        }
+      } else {
+        stdout.write('Falha ao inserir projeto: ${projeto.nomeProjeto}');
       }
+    } catch (error) {
+      stdout.write('Erro ao inserir projeto: $error');
     }
-    return null;
+    return result;
+  }
+
+  Future<List<Projeto>> getProjetos(
+      {List<String>? columns, String? query}) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = [];
+    if (query != null) {
+      if (query.isNotEmpty) {
+        result = await db.query(projetoTABLE,
+            columns: columns,
+            where: 'nomeProjeto LIKE ?',
+            whereArgs: ["%$query%"]);
+      }
+    } else {
+      result = await db.query(projetoTABLE, columns: columns);
+    }
+
+    List<Projeto> projetos = result.isNotEmpty
+        ? result.map((item) => Projeto.fromDatabaseJson(item)).toList()
+        : [];
+    return projetos;
+  }
+
+  Future<int> updateProjeto(Projeto projeto) async {
+    final db = await dbProvider.database;
+
+    var result = await db.update(projetoTABLE, projeto.toDatabaseJson(),
+        where: "idProjeto = ?", whereArgs: [projeto.idProjeto]);
+
+    return result;
+  }
+
+  Future<int> deleteProjeto(int id) async {
+    final db = await dbProvider.database;
+    var result =
+        await db.delete(projetoTABLE, where: 'idProjeto = ?', whereArgs: [id]);
+
+    return result;
   }
 }

@@ -1,58 +1,113 @@
+import 'dart:io';
+import 'package:gerenciamento_projetos/database/database_provider.dart';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
-import 'package:gerenciamento_projetos/dao/classes_dao.dart';
 
-class UsuarioDaoMemory implements UsuarioDaoo {
-  // Singleton
-  static UsuarioDaoMemory _instance = UsuarioDaoMemory._();
-  UsuarioDaoMemory._();
-  static UsuarioDaoMemory get instance => _instance;
-  factory UsuarioDaoMemory() => _instance;
+class UsuarioDao {
+  final dbProvider = DatabaseProvider.dbProvider;
+  static final usuarioTABLE = 'usuario';
+  static final projetoUsuarioTABLE = 'projetoUsuario';
 
-  List<Usuario> dados = [
-    Usuario(
-        idUsuario: 1, nomeUsuario: 'Bianca', emailUsuario: 'bianca@email.com'),
-  ];
-
-  @override
-  bool alterar(Usuario usuario) {
-    int ind = dados.indexOf(usuario);
-    if (ind >= 0) {
-      dados[ind] = usuario;
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  bool excluir(Usuario usuario) {
-    int ind = dados.indexOf(usuario);
-    if (ind >= 0) {
-      dados.removeAt(ind);
-      return true;
-    }
-    return false;
-  }
-
-  @override
-  bool inserir(Usuario usuario) {
-    dados.add(usuario);
-    usuario.idUsuario = dados.length;
-    return true;
-  }
-
-  @override
-  List<Usuario> listarTodos() {
-    return dados;
-  }
-
-//Talvez não precise
-  @override
-  Usuario? selecionarPorId(int idUsuario) {
-    for (int i = 0; i < dados.length; i++) {
-      if (dados[i].idUsuario == idUsuario) {
-        return dados[i];
+  Future<int> createUsuario(Usuario usuario) async {
+    final db = await dbProvider.database;
+    int result = 0;
+    try {
+      result = await db.insert(usuarioTABLE, usuario.toDatabaseJson());
+      if (result > 0) {
+        stdout.write('Usuário inserido com sucesso: ${usuario.nomeUsuario}');
+      } else {
+        stdout.write('Falha ao inserir usuário: ${usuario.nomeUsuario}');
       }
+    } catch (error) {
+      stdout.write('Erro ao inserir usuário: $error');
     }
-    return null;
+    return result;
+  }
+
+  Future<List<Usuario>> getUsuarios(
+      {List<String>? columns, String? query}) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = [];
+    if (query != null) {
+      if (query.isNotEmpty) {
+        result = await db.query(usuarioTABLE,
+            columns: columns, where: 'nome LIKE ?', whereArgs: ["%$query%"]);
+      }
+    } else {
+      result = await db.query(usuarioTABLE, columns: columns);
+    }
+
+    List<Usuario> usuarios = result.isNotEmpty
+        ? result.map((item) => Usuario.fromDatabaseJson(item)).toList()
+        : [];
+    return usuarios;
+  }
+
+  Future<int> updateUsuario(Usuario usuario) async {
+    final db = await dbProvider.database;
+
+    var result = await db.update(usuarioTABLE, usuario.toDatabaseJson(),
+        where: "id = ?", whereArgs: [usuario.idUsuario]);
+
+    return result;
+  }
+
+  Future<int> deleteUsuario(int id) async {
+    final db = await dbProvider.database;
+    var result =
+        await db.delete(usuarioTABLE, where: 'id = ?', whereArgs: [id]);
+
+    return result;
+  }
+
+  Future<int> createProjetoUsuario(int projetoId, int usuarioId) async {
+    final db = await dbProvider.database;
+    Map<String, dynamic> projetoUsuario = {
+      'projetoId': projetoId,
+      'usuarioId': usuarioId,
+    };
+
+    int result = 0;
+    try {
+      result = await db.insert(projetoUsuarioTABLE, projetoUsuario);
+      if (result > 0) {
+        stdout.write(
+            'Associação de usuário ao projeto inserida com sucesso: $projetoId - $usuarioId');
+      } else {
+        stdout.write(
+            'Falha ao inserir associação de usuário ao projeto: $projetoId - $usuarioId');
+      }
+    } catch (error) {
+      stdout.write('Erro ao inserir associação de usuário ao projeto: $error');
+    }
+    return result;
+  }
+
+  Future<List<Usuario>> getUsuariosDoProjeto(int projetoId) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = await db.query(
+      usuarioTABLE,
+      where:
+          'idUsuario IN (SELECT usuarioId FROM $projetoUsuarioTABLE WHERE projetoId = ?)',
+      whereArgs: [projetoId],
+    );
+
+    List<Usuario> usuarios = result.isNotEmpty
+        ? result.map((item) => Usuario.fromDatabaseJson(item)).toList()
+        : [];
+    return usuarios;
+  }
+
+  Future<int> deleteProjetoUsuarios(int projetoId) async {
+    final db = await dbProvider.database;
+
+    var result = await db.delete(
+      projetoUsuarioTABLE,
+      where: 'projetoId = ?',
+      whereArgs: [projetoId],
+    );
+
+    return result;
   }
 }
