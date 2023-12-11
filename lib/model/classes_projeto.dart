@@ -19,25 +19,6 @@ class Usuario {
     };
   }
 
-  // Método para criar um usuário a partir de um mapa obtido do SharedPreferences
-  factory Usuario.fromMap(Map<String, dynamic> map) {
-    return Usuario(
-      idUsuario: map['idUsuario'],
-      nomeUsuario: map['nomeUsuario'],
-      emailUsuario: map['emailUsuario'],
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is Usuario && other.idUsuario == idUsuario;
-  }
-
-  @override
-  int get hashCode => idUsuario.hashCode;
-
   factory Usuario.fromDatabaseJson(Map<String, dynamic> data) => Usuario(
         idUsuario: data['idUsuario'],
         nomeUsuario: data['nomeUsuario'],
@@ -65,20 +46,36 @@ class Tarefa {
 }
 
 class Projeto {
-  int idProjeto;
-  String nomeProjeto;
-  DateTime dataInicioProjeto;
-  DateTime prazoProjeto;
-  String descricaoProjeto;
-  List<Usuario> listaUsuariosProjeto;
-  List<Tarefa> listaTarefasProjeto;
+  final int idProjeto;
+  final String nomeProjeto;
+  final DateTime dataInicioProjeto;
+  final DateTime prazoProjeto;
+  final String descricaoProjeto;
+  final List<int> usuarios;
 
-  Projeto(
-      {required this.idProjeto,
-      required this.nomeProjeto,
-      required this.dataInicioProjeto,
-      required this.prazoProjeto,
-      required this.descricaoProjeto,
-      required this.listaUsuariosProjeto,
-      required this.listaTarefasProjeto});
+  Projeto({
+    required this.idProjeto,
+    required this.nomeProjeto,
+    required this.dataInicioProjeto,
+    required this.prazoProjeto,
+    required this.descricaoProjeto,
+    required this.usuarios,
+  });
+
+  Map<String, dynamic> toDatabaseJson() => {
+        "idProjeto": idProjeto,
+        "nomeProjeto": nomeProjeto,
+        "dataInicioProjeto": dataInicioProjeto.toIso8601String(),
+        "prazoProjeto": prazoProjeto.toIso8601String(),
+        "descricaoProjeto": descricaoProjeto,
+      };
+
+  factory Projeto.fromDatabaseJson(Map<String, dynamic> data) => Projeto(
+        idProjeto: data['idProjeto'],
+        nomeProjeto: data['nomeProjeto'],
+        dataInicioProjeto: DateTime.parse(data['dataInicioProjeto']),
+        prazoProjeto: DateTime.parse(data['prazoProjeto']),
+        descricaoProjeto: data['descricaoProjeto'],
+        usuarios: [], // Isso será preenchido posteriormente
+      );
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:gerenciamento_projetos/model/classes_projeto.dart';
-import 'package:gerenciamento_projetos/dao/classes_dao.dart';
-import 'package:gerenciamento_projetos/dao/memory/projeto_dao_memory.dart';
 import 'package:gerenciamento_projetos/database/database_provider.dart';
-import 'package:gerenciamento_projetos/database/table_usuario.dart';
-
+//import 'package:gerenciamento_projetos/database/table_usuario_dao.dart';
+import 'package:gerenciamento_projetos/dao/memory/usuario_dao_memory.dart';
 class FormUsuario extends StatefulWidget {
   final Function(Usuario) onUsuarioSubmit;
 
