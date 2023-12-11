@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.light,
       ),
-      home: ListProjetos(),
+      home: ListUsuario(),
       debugShowCheckedModeBanner: false,
     );
   }
