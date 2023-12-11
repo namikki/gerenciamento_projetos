@@ -6,6 +6,7 @@ class TarefaDao {
   final dbProvider = DatabaseProvider.dbProvider;
   static final tarefaTABLE = 'tarefa';
   static final projetoTarefaTABLE = 'projetoTarefa';
+  static final usuarioTABLE = 'usuario';
 
   Future<int> createTarefa(Tarefa tarefa, int projetoId) async {
     final db = await dbProvider.database;
@@ -95,6 +96,55 @@ class TarefaDao {
     };
     final result = await db.insert(projetoTarefaTABLE, row);
     return result;
+  }
+
+  // Insere uma nova associação de usuário e tarefa na tabela usuarioTarefa
+  Future<int> createUsuarioTarefa(int usuarioId, int tarefaId) async {
+    final db = await dbProvider.database;
+    final Map<String, dynamic> row = {
+      'usuarioId': usuarioId,
+      'tarefaId': tarefaId,
+    };
+    final result = await db.insert('usuarioTarefa', row);
+    return result;
+  }
+
+// Atualiza uma associação de usuário e tarefa existente na tabela usuarioTarefa
+  Future<int> updateUsuarioTarefa(int usuarioId, int tarefaId) async {
+    final db = await dbProvider.database;
+    final Map<String, dynamic> row = {
+      'usuarioId': usuarioId,
+      'tarefaId': tarefaId,
+    };
+    final result = await db.update('usuarioTarefa', row,
+        where: 'usuarioId = ? AND tarefaId = ?',
+        whereArgs: [usuarioId, tarefaId]);
+    return result;
+  }
+
+// Exclui uma associação de usuário e tarefa da tabela usuarioTarefa
+  Future<int> deleteUsuarioTarefa(int usuarioId, int tarefaId) async {
+    final db = await dbProvider.database;
+    final result = await db.delete('usuarioTarefa',
+        where: 'usuarioId = ? AND tarefaId = ?',
+        whereArgs: [usuarioId, tarefaId]);
+    return result;
+  }
+
+  Future<List<Usuario>> getUsuariosDaTarefa(int tarefaId) async {
+    final db = await dbProvider.database;
+
+    List<Map<String, dynamic>> result = await db.query(
+      usuarioTABLE,
+      where:
+          'idUsuario IN (SELECT usuarioId FROM usuarioTarefa WHERE tarefaId = ?)',
+      whereArgs: [tarefaId],
+    );
+
+    List<Usuario> usuarios = result.isNotEmpty
+        ? result.map((item) => Usuario.fromDatabaseJson(item)).toList()
+        : [];
+    return usuarios;
   }
 
 //fechamento

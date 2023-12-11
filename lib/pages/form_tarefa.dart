@@ -10,7 +10,10 @@ class FormTarefa extends StatefulWidget {
   final int projetoId;
 
   FormTarefa(
-      {required this.onTarefaSubmit, this.tarefa, required this.usuarios, required this.projetoId});
+      {required this.onTarefaSubmit,
+      this.tarefa,
+      required this.usuarios,
+      required this.projetoId});
 
   @override
   _FormTarefaState createState() => _FormTarefaState();
@@ -123,7 +126,7 @@ class _FormTarefaState extends State<FormTarefa> {
                     .entries
                     .where((entry) => _selecionados[entry.key])
                     .map((entry) => entry.value.idUsuario)
-                    .first;
+                    .toList();
 
                 if (descricao.isNotEmpty) {
                   final tarefaDao = TarefaDao();
@@ -133,13 +136,19 @@ class _FormTarefaState extends State<FormTarefa> {
                     final novaTarefa = Tarefa(
                       idTarefa: DateTime.now().millisecondsSinceEpoch,
                       descricaoTarefa: descricao,
-                      usuarioTarefaId: usuarioTarefaId,
+                      usuarioTarefaId: usuarioTarefaId[
+                          0], // Modifique esta linha se necessário
                       tarefaCompleta: _tarefaCompleta,
                     );
 
                     // Insere a nova tarefa no banco de dados
                     final id = await tarefaDao.createTarefa(
                         novaTarefa, widget.projetoId);
+                    // Insere as associações de usuários na tabela usuarioTarefa
+                    for (var usuarioId in usuarioTarefaId) {
+                      await tarefaDao.createUsuarioTarefa(
+                          usuarioId, novaTarefa.idTarefa);
+                    }
                     // Imprime o id da tarefa inserida
                     print('Tarefa inserida com id: $id');
                   } else {
@@ -147,12 +156,24 @@ class _FormTarefaState extends State<FormTarefa> {
                     final tarefaAtualizada = Tarefa(
                       idTarefa: widget.tarefa!.idTarefa,
                       descricaoTarefa: descricao,
-                      usuarioTarefaId: usuarioTarefaId,
+                      usuarioTarefaId: usuarioTarefaId[
+                          0], // Modifique esta linha se necessário
                       tarefaCompleta: _tarefaCompleta,
                     );
 
                     // Atualiza a tarefa no banco de dados
                     final id = await tarefaDao.updateTarefa(tarefaAtualizada);
+                    // Atualiza as associações de usuários na tabela usuarioTarefa
+                    // Primeiro, exclui todas as associações existentes
+                    await tarefaDao.deleteUsuarioTarefa(
+                        tarefaAtualizada.idTarefa,
+                        tarefaAtualizada.usuarioTarefaId);
+
+                    // Em seguida, insere as novas associações
+                    for (var usuarioId in usuarioTarefaId) {
+                      await tarefaDao.createUsuarioTarefa(
+                          usuarioId, tarefaAtualizada.idTarefa);
+                    }
                     // Imprime o id da tarefa atualizada
                     print('Tarefa atualizada com id: $id');
                   }

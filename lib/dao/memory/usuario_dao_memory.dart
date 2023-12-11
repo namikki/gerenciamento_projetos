@@ -120,7 +120,7 @@ class UsuarioDao {
     List<Map<String, dynamic>> result = await db.query(
       usuarioTABLE,
       where:
-          'idUsuario IN (SELECT usuarioId FROM $projetoTarefaTABLE WHERE tarefaId = ?)',
+          'idUsuario IN (SELECT usuarioId FROM usuarioTarefa WHERE tarefaId = ?)',
       whereArgs: [tarefaId],
     );
 

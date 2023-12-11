@@ -70,5 +70,15 @@ class DatabaseProvider {
       FOREIGN KEY (tarefaId) REFERENCES tarefa (idTarefa)
     )
   ''');
+
+    await database.execute('''
+CREATE TABLE usuarioTarefa (
+  usuarioId INTEGER NOT NULL,
+  tarefaId INTEGER NOT NULL,
+  PRIMARY KEY (usuarioId, tarefaId),
+  FOREIGN KEY (usuarioId) REFERENCES usuario (idUsuario),
+  FOREIGN KEY (tarefaId) REFERENCES tarefa (idTarefa)
+)
+''');
   }
 }
